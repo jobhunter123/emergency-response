@@ -1,25 +1,110 @@
-# Frontend - Emergency Response Platform
+# Signal — Community Emergency Response Platform (Frontend)
 
-This directory is reserved for the Next.js + TypeScript frontend application.
-
-> **Status:** Placeholder structure only. No UI components or application code have been implemented yet.
+Modern, accessible web client for the Community Emergency Response Platform, built with **React 19**, **Vite 8**, **TypeScript**, and customized CSS design system tokens.
 
 ---
 
-## Instructions for Frontend Team
+## 🚀 Quick Start Guide
 
-When initializing the Next.js project inside this folder, please ensure the following configuration is used:
-
-- **Framework:** Next.js (App Router recommended)
-- **Language:** TypeScript
-- **Linter:** ESLint
-
-### Initialization Command
-
-Navigate to the `frontend/` directory and execute:
-
+### 1. Start the Backend API
+From the repository root or `backend/` directory:
 ```bash
-npx create-next-app@latest . --typescript --eslint
+cd backend
+.venv\Scripts\activate
+uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
+```
+The backend API and Swagger UI will be available at:
+* API Root: `http://localhost:8000`
+* Swagger Interactive Docs: `http://localhost:8000/docs`
+* Health Check: `http://localhost:8000/health`
+
+### 2. Configure Environment Variables
+Inside the `frontend/` directory, copy the example environment file:
+```bash
+cp .env.example .env
+```
+Configure your environment variables:
+```env
+VITE_API_URL=http://localhost:8000
+VITE_GOOGLE_MAPS_API_KEY=
 ```
 
-> **Important:** All frontend assets, components, hooks, and styles must stay self-contained inside `frontend/`. Do not place backend files or shared logic outside this directory.
+#### Google Maps API Key Configuration & Security
+To enable the interactive Google Maps visualization:
+1. Obtain an API key from the [Google Cloud Console](https://console.cloud.google.com/).
+2. Enable the **Maps JavaScript API**.
+3. **Restrict the API Key**:
+   - **Application Restrictions**: Set to **Websites (HTTP Referrers)** and add authorized origins (e.g., `http://localhost:*`, `http://127.0.0.1:*`, or your production domain).
+   - **API Restrictions**: Restrict the key to only the **Maps JavaScript API**.
+4. Set `VITE_GOOGLE_MAPS_API_KEY=your_api_key_here` in `frontend/.env` (which is git-ignored).
+5. **Missing Key Fallback**: If `VITE_GOOGLE_MAPS_API_KEY` is empty or omitted, the application will **not** crash; it automatically displays a status notice and activates an integrated radar canvas view.
+
+### 3. Install Dependencies & Start Frontend
+From the `frontend/` directory:
+```bash
+npm install
+npm run dev
+```
+The frontend dev server will launch at:
+* Local URL: `http://localhost:5173`
+
+To build for production:
+```bash
+npm run build
+```
+To verify TypeScript types:
+```bash
+npx tsc --noEmit
+```
+
+---
+
+## 🔐 Authentication & Session Flow
+
+The platform uses OAuth2-compatible JWT bearer tokens:
+1. **Registration**: Submits `POST /api/v1/auth/register` with `email`, `password`, `full_name`, and optional `phone_number`.
+2. **Login**: Submits `POST /api/v1/auth/login` (application/x-www-form-urlencoded) and receives `{ access_token, token_type }`.
+3. **Session Storage**: The JWT token is securely stored in `localStorage` under `emergency_access_token` and attached as `Authorization: Bearer <token>` in the centralized API client (`src/api/client.ts`).
+4. **Current User Profile**: Fetches `GET /api/v1/auth/me` to determine user status and whether the user possesses the `is_responder` role.
+5. **Logout**: Instantly clears state and removes token from storage.
+
+---
+
+## 🚨 Core Integrated Features
+
+### 1. Real-time Incident Map & List
+* **Live Querying**: Fetches all active emergency incidents via `GET /api/v1/incidents`.
+* **Category & Severity Filters**: Real-time filtering by emergency type (FIRE, ACCIDENT, FLOOD, MEDICAL, HAZARD) and severity level.
+* **Corroboration & Confidence Scoring**: Displays real-time numeric confidence score (0–100) and confidence tier badge (`LOW`, `MODERATE`, `HIGH`, `VERY_HIGH`).
+
+### 2. Emergency Reporting with Geolocation
+* **Submit Report**: Citizens submit observations via `POST /api/v1/reports`.
+* **Browser Geolocation**: Integrates browser `navigator.geolocation` to capture current coordinates and snapshot location to `PATCH /api/v1/users/me/location`.
+* **Automatic Clustering**: Reports within 500m of an existing same-type incident automatically corroborate it, incrementing corroboration counts and increasing confidence score without manual intervention.
+
+### 3. Incident Details & Affected Area Radius
+* **Incident Inspection**: Retrieves comprehensive incident state via `GET /api/v1/incidents/{incident_id}`.
+* **Affected Radius Visualization**: Displays geographic affected area center point, calculated radius in meters, and count of users situated within the impact perimeter.
+
+### 4. Responder Lifecycle Management
+* **Role-Protected**: Operational status actions are restricted to users with `is_responder: true`.
+* **Strict State Machine**: Supports the validated lifecycle:
+  `UNVERIFIED` → `VERIFYING` → `CONFIRMED` → `RESPONDING` → `CONTAINED` → `RESOLVED` (and `FALSE_ALARM`).
+* **Safe Error Handling**: Prevents invalid backward transitions and gracefully handles `403 Forbidden` if unauthorized.
+
+### 5. Targeted Emergency Alerts
+* **Incident-Triggered Notifications**: Alerts are generated by the backend when an incident is transitioned to `CONFIRMED` or `RESPONDING` for users within the affected radius.
+* **Alert Inbox**: Citizens view personal alerts via `GET /api/v1/alerts` and filter by `GET /api/v1/alerts?unread_only=true`.
+* **Mark as Read**: Citizens acknowledge alerts via `PATCH /api/v1/alerts/{alert_id}/read`.
+
+### 6. Interactive Google Maps Experience
+* **Google Maps JavaScript API**: Powered by `@googlemaps/js-api-loader` v2 with dark mode styling matching Signal dashboard colors.
+* **Markers & Affected Circles**: Renders active incidents as severity-coded pins with `affected_radius_meters` circle perimeters.
+* **Telemetry InfoWindows**: Clicking an incident marker opens an InfoWindow showing emergency type, severity, status, confidence score, and corroboration count with direct drill-down button.
+* **User Location**: Displays current user snapshot pin when geolocation permission is granted.
+* **Graceful Degradation**: If `VITE_GOOGLE_MAPS_API_KEY` is not configured, the map area seamlessly switches to the integrated radar canvas view with a status banner.
+
+### 7. Evidence Photo Upload (Optional)
+* **On-Scene Visual Evidence**: Citizens can attach an optional photo (JPEG, PNG, WebP up to 5MB) during report creation.
+* **Instant Client Preview**: Displays selected image thumbnail with file size and type feedback, alongside a remove button.
+* **Evidence Gallery**: Incident detail views display field evidence photos uploaded by contributing citizens to enhance responder situational awareness without disclosing citizen identities.

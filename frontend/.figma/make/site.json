@@ -1,0 +1,10 @@
+{
+  "description": "A community-driven emergency platform enabling users to report, verify, and track incidents while receiving targeted alerts for timely response.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}

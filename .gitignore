@@ -7,6 +7,7 @@
 # ------------------------------------------------------------------------------
 __pycache__/
 *.py[cod]
+*.pyo
 *$py.class
 *.so
 .Python
@@ -14,6 +15,9 @@ build/
 develop-eggs/
 dist/
 downloads/
+tmp/
+temp/
+*.log
 eggs/
 .eggs/
 lib/
@@ -107,3 +111,35 @@ Thumbs.db
 [Dd]esktop.ini
 *.tmp
 *.temp
+
+# ------------------------------------------------------------------------------
+# Databases
+# ------------------------------------------------------------------------------
+*.db
+*.sqlite
+*.sqlite3
+
+# ------------------------------------------------------------------------------
+# Portable Tools, Archives & Temporary Downloads
+# ------------------------------------------------------------------------------
+tools/
+*.zip
+*.tar.gz
+*.tgz
+
+# ------------------------------------------------------------------------------
+# Frontend Build Output & Caches
+# ------------------------------------------------------------------------------
+frontend/dist/
+frontend/.cache/
+frontend/.vite/
+frontend/*.tsbuildinfo
+
+# ------------------------------------------------------------------------------
+# Uploaded User Files & Photo Evidence
+# ------------------------------------------------------------------------------
+backend/uploads/*
+!backend/uploads/.gitkeep
+!backend/uploads/report_photos/.gitkeep
+backend/app/uploads/
+
