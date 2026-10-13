@@ -18,14 +18,14 @@ def init_db(engine: Engine | None = None) -> None:
     Base.metadata.create_all(bind=target_engine)
 
     # Ensure schema backward-compatibility for SQLite if photo_url was added
-    try:
-        from sqlalchemy import text
-        with target_engine.connect() as conn:
-            columns = conn.execute(text("PRAGMA table_info(emergency_reports)")).fetchall()
-            col_names = [col[1] for col in columns]
-            if col_names and "photo_url" not in col_names:
-                conn.execute(text("ALTER TABLE emergency_reports ADD COLUMN photo_url VARCHAR(512)"))
-                conn.commit()
-    except Exception:
-        # Non-fatal if table not yet created or underlying engine is non-SQLite
-        pass
+    if target_engine.dialect.name == "sqlite":
+        try:
+            from sqlalchemy import text
+            with target_engine.connect() as conn:
+                columns = conn.execute(text("PRAGMA table_info(emergency_reports)")).fetchall()
+                col_names = [col[1] for col in columns]
+                if col_names and "photo_url" not in col_names:
+                    conn.execute(text("ALTER TABLE emergency_reports ADD COLUMN photo_url VARCHAR(512)"))
+                    conn.commit()
+        except Exception:
+            pass

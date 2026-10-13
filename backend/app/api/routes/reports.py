@@ -14,6 +14,7 @@ from app.schemas.emergency_report import (
     EmergencyReportSubmissionResponse,
     IncidentSummary,
 )
+from app.core.config import settings
 from app.services.confidence import get_confidence_level
 from app.services.emergency_report import (
     create_emergency_report,
@@ -29,7 +30,7 @@ ALLOWED_PHOTO_MIME_TYPES = {
     "image/png": ".png",
     "image/webp": ".webp",
 }
-UPLOAD_DIR = Path(__file__).resolve().parents[3] / "uploads" / "report_photos"
+UPLOAD_DIR = settings.UPLOAD_DIR
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 

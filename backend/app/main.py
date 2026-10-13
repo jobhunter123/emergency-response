@@ -2,9 +2,10 @@
 
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from app.api.routes import (
     alerts_router,
@@ -35,11 +36,14 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# Configure CORS for local frontend integration
+# Configure CORS dynamically for local and production deployment
+cors_origins = [str(o).rstrip("/") for o in settings.CORS_ORIGINS]
+allow_all_origins = "*" in cors_origins
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
-    allow_credentials=True,
+    allow_origins=["*"] if allow_all_origins else cors_origins,
+    allow_credentials=not allow_all_origins,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -51,13 +55,14 @@ app.include_router(incidents_router, prefix=API_V1_STR)
 app.include_router(alerts_router, prefix=API_V1_STR)
 app.include_router(users_router, prefix=API_V1_STR)
 
-# Serve report evidence photos locally
-from pathlib import Path
-from fastapi.staticfiles import StaticFiles
-
-UPLOAD_DIR = Path(__file__).resolve().parent.parent / "uploads" / "report_photos"
-UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
-app.mount("/uploads/report_photos", StaticFiles(directory=str(UPLOAD_DIR)), name="report_photos")
+# Serve report evidence photos (configurable for local or mounted persistent disk)
+upload_dir = settings.UPLOAD_DIR
+upload_dir.mkdir(parents=True, exist_ok=True)
+app.mount(
+    "/uploads/report_photos",
+    StaticFiles(directory=str(upload_dir)),
+    name="report_photos",
+)
 
 
 @app.get("/")
@@ -77,3 +82,15 @@ def health_check() -> dict[str, str]:
     return {
         "status": "healthy",
     }
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    server_port = int(os.environ.get("PORT", settings.PORT))
+    uvicorn.run(
+        "app.main:app",
+        host="0.0.0.0",
+        port=server_port,
+        reload=settings.DEBUG,
+    )

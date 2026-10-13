@@ -15,7 +15,7 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "types": ["node", "google.maps"],
+    "types": ["node"],
     "strict": true,
     "noFallthroughCasesInSwitch": true
   },

@@ -26,18 +26,9 @@ cp .env.example .env
 Configure your environment variables:
 ```env
 VITE_API_URL=http://localhost:8000
-VITE_GOOGLE_MAPS_API_KEY=
 ```
 
-#### Google Maps API Key Configuration & Security
-To enable the interactive Google Maps visualization:
-1. Obtain an API key from the [Google Cloud Console](https://console.cloud.google.com/).
-2. Enable the **Maps JavaScript API**.
-3. **Restrict the API Key**:
-   - **Application Restrictions**: Set to **Websites (HTTP Referrers)** and add authorized origins (e.g., `http://localhost:*`, `http://127.0.0.1:*`, or your production domain).
-   - **API Restrictions**: Restrict the key to only the **Maps JavaScript API**.
-4. Set `VITE_GOOGLE_MAPS_API_KEY=your_api_key_here` in `frontend/.env` (which is git-ignored).
-5. **Missing Key Fallback**: If `VITE_GOOGLE_MAPS_API_KEY` is empty or omitted, the application will **not** crash; it automatically displays a status notice and activates an integrated radar canvas view.
+The interactive live map is powered by **Leaflet** with **OpenStreetMap** tiles, requiring no third-party map API keys or cloud credentials.
 
 ### 3. Install Dependencies & Start Frontend
 From the `frontend/` directory:
@@ -97,12 +88,12 @@ The platform uses OAuth2-compatible JWT bearer tokens:
 * **Alert Inbox**: Citizens view personal alerts via `GET /api/v1/alerts` and filter by `GET /api/v1/alerts?unread_only=true`.
 * **Mark as Read**: Citizens acknowledge alerts via `PATCH /api/v1/alerts/{alert_id}/read`.
 
-### 6. Interactive Google Maps Experience
-* **Google Maps JavaScript API**: Powered by `@googlemaps/js-api-loader` v2 with dark mode styling matching Signal dashboard colors.
+### 6. Interactive Leaflet + OpenStreetMap Experience
+* **Leaflet & React-Leaflet**: Native open-source map visualization using OpenStreetMap tile layers with zero API-key dependencies.
 * **Markers & Affected Circles**: Renders active incidents as severity-coded pins with `affected_radius_meters` circle perimeters.
-* **Telemetry InfoWindows**: Clicking an incident marker opens an InfoWindow showing emergency type, severity, status, confidence score, and corroboration count with direct drill-down button.
-* **User Location**: Displays current user snapshot pin when geolocation permission is granted.
-* **Graceful Degradation**: If `VITE_GOOGLE_MAPS_API_KEY` is not configured, the map area seamlessly switches to the integrated radar canvas view with a status banner.
+* **Telemetry Popups**: Clicking an incident marker opens a styled popup card displaying emergency type, severity badge, status, coordinates, confidence tier, and corroboration count with direct drill-down button.
+* **User Location Pin**: Displays current user snapshot location pin when geolocation permission is granted.
+* **Graceful Degradation & Resilience**: Handles loading, empty sectors, and invalid or missing coordinates gracefully without breaking dashboard layout.
 
 ### 7. Evidence Photo Upload (Optional)
 * **On-Scene Visual Evidence**: Citizens can attach an optional photo (JPEG, PNG, WebP up to 5MB) during report creation.

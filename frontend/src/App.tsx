@@ -1,6 +1,6 @@
 import { FormEvent, ReactNode, useEffect, useState } from "react";
 import { api, ApiError, getStoredToken } from "./api/client";
-import { GoogleMapView } from "./components/GoogleMapView";
+import { LeafletMapView } from "./components/LeafletMapView";
 import {
   Alert,
   EmergencyType,
@@ -267,169 +267,36 @@ function PageTitle({
   );
 }
 
-function FallbackSvgMap({
-  detailed = false,
-  incidents = [],
-  selectedIncident = null,
-  onIncident,
-}: {
-  detailed?: boolean;
-  incidents?: Incident[];
-  selectedIncident?: Incident | IncidentDetailType | null;
-  onIncident?: (id: string) => void;
-}) {
-  const [zoom, setZoom] = useState(1);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-
-  const displayIncidents = incidents.slice(0, 5);
-  const zoomIn = () =>
-    setZoom((value) => Math.min(1.6, Number((value + 0.2).toFixed(1))));
-  const zoomOut = () =>
-    setZoom((value) => Math.max(0.8, Number((value - 0.2).toFixed(1))));
-
-  const activeSelected =
-    displayIncidents.find((i) => i.id === selectedId) || null;
-
-  // Generate marker positions deterministically from incident coordinates
-  function getMarkerStyle(inc: Incident, index: number) {
-    if (detailed) {
-      return { top: "50%", left: "50%" };
-    }
-    const xPct = 25 + ((index * 22) % 55);
-    const yPct = 30 + ((index * 19) % 45);
-    return { top: `${yPct}%`, left: `${xPct}%` };
-  }
-
-  return (
-    <div
-      className={`map-view ${detailed ? "map-detailed" : ""}`}
-      aria-label="Live incident map"
-    >
-      <div className="map-canvas" style={{ transform: `scale(${zoom})` }}>
-        <svg
-          className="map-lines"
-          viewBox="0 0 800 460"
-          preserveAspectRatio="none"
-          aria-hidden="true"
-        >
-          <path d="M-20 98C120 70 178 156 310 111S536 30 840 83M-30 300c120-69 214-75 320-9s201 79 280 6 137-79 270-46M120-30c5 112 14 194 68 278s35 164 19 242M506-20c-24 121-18 196 53 268s77 144 59 242" />
-          <path
-            className="minor"
-            d="M-20 193c166-8 219 29 325 1s221-67 555-39M-10 392c130-42 245-18 355 17s246-26 515-67M336-20c14 136-8 241 33 342s60 112 65 168M705-20c-61 150-45 268 22 510"
-          />
-        </svg>
-
-        {detailed && <div className="affected-radius" />}
-
-        {detailed && selectedIncident ? (
-          <button
-            className={`map-marker marker-main selected`}
-            aria-label={`${selectedIncident.title} at ${selectedIncident.latitude.toFixed(4)}, ${selectedIncident.longitude.toFixed(4)}`}
-            style={{ top: "50%", left: "50%" }}
-          >
-            <span />
-          </button>
-        ) : (
-          displayIncidents.map((incident, index) => {
-            const isSelected = selectedId === incident.id;
-            return (
-              <button
-                key={incident.id}
-                className={`map-marker marker-${index === 0 ? "main" : index === 1 ? "two" : "three"} ${isSelected ? "selected" : ""}`}
-                style={getMarkerStyle(incident, index)}
-                aria-label={`${incident.title}`}
-                onClick={() => setSelectedId(incident.id)}
-              >
-                <span />
-              </button>
-            );
-          })
-        )}
-      </div>
-
-      {activeSelected && !detailed && (
-        <div className="map-popup" role="status">
-          <button
-            className="map-popup-close"
-            aria-label="Close incident details"
-            onClick={() => setSelectedId(null)}
-          >
-            <Icon name="close" size={14} />
-          </button>
-          <Status tone={getStatusTone(activeSelected.status)}>
-            {activeSelected.status}
-          </Status>
-          <strong>{formatEmergencyType(activeSelected.emergency_type)}</strong>
-          <span>
-            {activeSelected.title ||
-              `Near ${activeSelected.latitude.toFixed(4)}, ${activeSelected.longitude.toFixed(4)}`}
-          </span>
-          <small>
-            {activeSelected.corroboration_count} corroboration(s) ·{" "}
-            {Math.round(activeSelected.confidence_score)}% confidence
-          </small>
-          {onIncident && (
-            <button
-              className="map-popup-action"
-              onClick={() => onIncident(activeSelected.id)}
-            >
-              View incident <Icon name="arrow" size={13} />
-            </button>
-          )}
-        </div>
-      )}
-
-      <div className="map-controls">
-        <button aria-label="Zoom in" onClick={zoomIn} disabled={zoom >= 1.6}>
-          +
-        </button>
-        <span aria-live="polite">{Math.round(zoom * 100)}%</span>
-        <button aria-label="Zoom out" onClick={zoomOut} disabled={zoom <= 0.8}>
-          −
-        </button>
-      </div>
-
-      <div className="map-key">
-        <span className="key-dot" />
-        {detailed && selectedIncident
-          ? `Affected area · ${selectedIncident.affected_radius_meters}m radius`
-          : `${displayIncidents.length} active emergency incidents`}
-      </div>
-    </div>
-  );
-}
-
 function MapView({
   detailed = false,
   incidents = [],
   selectedIncident = null,
   userLocation = null,
+  loading = false,
+  error = null,
   onIncident,
 }: {
   detailed?: boolean;
   incidents?: Incident[];
   selectedIncident?: Incident | IncidentDetailType | null;
   userLocation?: { latitude: number; longitude: number } | null;
+  loading?: boolean;
+  error?: string | null;
   onIncident?: (id: string) => void;
 }) {
   return (
-    <GoogleMapView
+    <LeafletMapView
       detailed={detailed}
       incidents={incidents}
       selectedIncident={selectedIncident}
       userLocation={userLocation}
+      loading={loading}
+      error={error}
       onIncident={onIncident}
-      renderFallback={() => (
-        <FallbackSvgMap
-          detailed={detailed}
-          incidents={incidents}
-          selectedIncident={selectedIncident}
-          onIncident={onIncident}
-        />
-      )}
     />
   );
 }
+
 
 function Confidence({
   value,
@@ -528,6 +395,7 @@ function Overview({
           </div>
           <MapView
             incidents={incidents}
+            loading={loading}
             userLocation={
               currentUser?.latitude && currentUser?.longitude
                 ? { latitude: currentUser.latitude, longitude: currentUser.longitude }
@@ -751,6 +619,8 @@ function Incidents({
         <section className="sticky-map">
           <MapView
             incidents={filteredIncidents}
+            loading={loading}
+            error={error}
             onIncident={(id) => onSelectIncident(id)}
           />
         </section>
@@ -1881,7 +1751,11 @@ function Login({ onLoginSuccess }: { onLoginSuccess: (user: User) => void }) {
       if (err instanceof ApiError) {
         setError(err.detail);
       } else {
-        setError("Unable to authenticate with server. Please verify backend is running on http://localhost:8000.");
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Unable to authenticate with server. Please ensure the backend service is running and accessible."
+        );
       }
     } finally {
       setLoading(false);

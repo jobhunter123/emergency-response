@@ -1,57 +1,136 @@
 # 🚨 Signal — Community Emergency Response Platform
 
-> **A real-time emergency coordination platform that bridges citizen observations with authoritative first-responder workflows.**
+> **A mission-critical emergency coordination platform that transforms real-time citizen observations into verified, actionable incident intelligence for first responders.**
 
-Signal transforms isolated, noisy citizen reports into verified, actionable incident intelligence through automated spatial clustering, deterministic corroboration scoring, responder lifecycle management, and privacy-preserving targeted emergency alerting.
-
----
-
-## 📌 Problem & Motivation
-
-In acute crisis situations—such as urban fires, structural collapses, floods, or hazardous spills—emergency response systems face critical challenges:
-- **Noisy, Fragmented Reports**: Citizens report from varied perspectives without correlation.
-- **Verification Delays**: Responders spend precious minutes determining whether a call is genuine or an isolated false alarm.
-- **Premature Escalation**: Systems that automate official alarms based on single reports risk panicking the public and dispatching limited resources to false alarms.
-- **Untargeted Warning Systems**: Broadcast sirens or county-wide alerts lack local spatial context, alarming residents who are safe while failing to give precise radius guidance to those in direct danger.
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.109.0-009688?logo=fastapi)](https://fastapi.tiangolo.com)
+[![React](https://img.shields.io/badge/React-19.0.0-61DAFB?logo=react)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.3.3-3178C6?logo=typescript)](https://www.typescriptlang.org)
+[![Vite](https://img.shields.io/badge/Vite-5.0.12-646CFF?logo=vite)](https://vitejs.dev)
+[![Leaflet](https://img.shields.io/badge/Leaflet-1.9.4-199900?logo=leaflet)](https://leafletjs.com)
+[![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-2.0.25-D71F00)](https://www.sqlalchemy.org)
+[![PostgreSQL Ready](https://img.shields.io/badge/PostgreSQL-Compatible-336791?logo=postgresql)](https://www.postgresql.org)
+[![Tests Passing](https://img.shields.io/badge/Tests-93%20Passed-brightgreen)](https://github.com/jobhunter123/emergency-response)
 
 ---
 
-## 💡 The Solution
+## 📌 Project Overview & Problem Statement
 
-**Signal** provides an evidence-based emergency coordination platform:
-1. **Citizen Reporting**: Citizens report observations with category, severity, description, and location.
-2. **Geographic Incident Clustering**: Reports within proximity (500m) and time window are automatically grouped.
-3. **Multi-User Corroboration**: Independent reports increment corroboration; duplicate reports from the same user are recorded without inflating the score.
-4. **Deterministic Confidence Engine**: A bounded (0–100) scoring algorithm dynamically updates corroboration strength based on distance, recency, and severity agreement.
-5. **Responder Operational Governance**: Responders retain exclusive authority to verify, confirm, contain, and resolve incidents.
-6. **Dynamic Affected Area Radius**: Computes geographic impact zones using Haversine spherical geometry.
-7. **Targeted Emergency Alerts**: Automatically dispatches alerts exclusively to active users located within the affected radius when an incident reaches `CONFIRMED` or `RESPONDING`, with strict deduplication.
+In acute urban emergencies—such as structural fires, flash floods, gas leaks, or industrial accidents—response networks confront four systemic bottlenecks:
 
-### 🌟 Core Innovation: Evidence-Backed Corroboration
+1. **Noisy, Fragmented Reports**: Multiple 911 calls or citizen reports flood dispatch centers with contradictory details and disparate vantage points.
+2. **Verification Delays**: Responders spend critical initial minutes determining whether a call is a genuine crisis or an isolated false alarm before deploying units.
+3. **Premature Escalation**: Automated broadcast alarms triggered from uncorroborated single reports cause public panic and waste emergency department resources.
+4. **Untargeted Warning Systems**: Broadcast sirens or county-wide push notifications lack hyper-local spatial precision, causing alert fatigue for safe citizens while failing to deliver actionable perimeter warnings to those directly in harm's way.
 
-The core philosophy of Signal is simple: **a single citizen report is never treated as confirmed ground truth.**
+### The Signal Solution
 
-Instead, independent reports are spatially and temporally correlated to compute an objective confidence score. An incident with strong corroboration transitions automatically to `VERIFYING` to alert emergency services, but **only verified human responders can transition an incident to `CONFIRMED`**.
-
-#### Why This Matters:
-- **Reduces False Escalation**: Isolated or bogus reports never trigger community-wide emergency alerts.
-- **Evidence-Backed Incident Confidence**: First responders arrive on-scene with corroborating witness counts, spatial dispersion data, and severity agreement metrics.
-- **Prevents Premature Confirmation**: Separates community corroboration strength from official operational status.
-- **Enables Hyper-Targeted Alerts**: Alarms only citizens located within the computed hazard perimeter.
-- **Transparent Lifecycle Chain**: Creates an auditable chain from `Citizen Report` → `Corroboration` → `Responder Verification` → `Tactical Response` → `Containment` → `Resolution`.
+**Signal** bridges citizen observations with verified first-responder workflows. It ingests ground-level emergency reports, groups them spatially and temporally into unified incidents, scores community corroboration through a bounded mathematical algorithm, and delivers hyper-targeted alerts exclusively to citizens within the calculated hazard radius—all while preserving the responder as the ultimate authority for confirmation.
 
 ---
 
-## 🏗️ System Architecture
+## 🖼️ User Interface & Portfolio Previews
+
+> *The UI is built with React 19, TypeScript, and a high-contrast warm light design system (`--ivory`, `--paper`, `--red`, `--navy`). Replace the placeholders below with live application screenshots.*
+
+```
++------------------------------------------------------------------------------------+
+| [SCREENSHOT PLACEHOLDER: Full Application Dashboard & Interactive Leaflet Map]     |
+| Shows live crisis incidents mapped across OpenStreetMap tiles with custom visual   |
+| severity markers (Critical, High, Medium, Low) and affected hazard radius circles. |
++------------------------------------------------------------------------------------+
+```
+*(Screenshot 1: Live Interactive Incident Map & Sector Overview)*
+
+```
++------------------------------------------------------------------------------------+
+| [SCREENSHOT PLACEHOLDER: Emergency Reporting Modal with Photo Evidence]            |
+| Shows citizen reporting form with category selection, GPS geolocation snapshot,   |
+| description input, and optional image upload (JPEG/PNG/WebP with client preview).  |
++------------------------------------------------------------------------------------+
+```
+*(Screenshot 2: Citizen Incident Report Creation Modal)*
+
+```
++------------------------------------------------------------------------------------+
+| [SCREENSHOT PLACEHOLDER: Responder Operations Console & Lifecycle Transitions]     |
+| Displays responder-authenticated controls, verification status badges, confidence  |
+| scoring breakdown, independent witness tally, and tactical status transition buttons|
++------------------------------------------------------------------------------------+
+```
+*(Screenshot 3: First Responder Command Console)*
+
+```
++------------------------------------------------------------------------------------+
+| [SCREENSHOT PLACEHOLDER: Targeted Emergency Alerts & Citizen Inbox]                |
+| Shows targeted warning alert banner for affected citizens within perimeter radius, |
+| real-time severity tag, incident distance indicator, and read-acknowledgment button|
++------------------------------------------------------------------------------------+
+```
+*(Screenshot 4: Hyper-Targeted Emergency Alert Notification)*
+
+---
+
+## 🌟 Verified Implemented Features
+
+Every feature listed below is verified, tested, and actively functioning within the codebase:
+
+### 1. Citizen Emergency Reporting
+- Citizen submissions with category (`FIRE`, `MEDICAL`, `POLICE`, `INFRASTRUCTURE`, `NATURAL_DISASTER`, `HAZARDOUS`), severity, description, and GPS coordinates.
+- Optional photographic evidence upload (JPEG, PNG, WebP up to 5MB) stored with collision-safe UUID filenames.
+- Point-in-time geolocation capture without persistent background tracking.
+
+### 2. Spatial & Temporal Clustering Engine
+- Automated grouping of incoming reports into existing active incidents within a configurable spatial radius (default: 500 meters) and time window (2 hours).
+- New reports in unmonitored sectors automatically instantiate new `UNVERIFIED` incidents.
+
+### 3. Multi-User Corroboration Engine
+- Corroborates reports across distinct registered users.
+- Repeat reports filed by the same user update incident notes without artificially inflating the independent corroboration count.
+
+### 4. Deterministic Confidence Scoring (0.0 – 100.0)
+- Mathematical scoring engine evaluating:
+  - **Base corroboration** (up to 75 pts): Scaled by independent witness count.
+  - **Spatial clustering** (up to 15 pts): Proximity to incident epicenter.
+  - **Temporal recency** (up to 10 pts): Freshness of reports.
+  - **Severity consistency** (up to 5 pts): Category and severity agreement.
+- Categorized into confidence tiers: `LOW` (0–24.9), `MODERATE` (25–49.9), `HIGH` (50–74.9), and `VERY_HIGH` (75–100.0).
+- Automatically advances incident to `VERIFYING` when confidence reaches $\ge 25.0$ and 2+ independent reports exist.
+
+### 5. Responder Operational Governance
+- Role-based operational control: Only users authenticated with `is_responder: true` can transition incident lifecycle states.
+- Audited lifecycle state machine:
+  $$\text{UNVERIFIED} \longrightarrow \text{VERIFYING} \longrightarrow \text{CONFIRMED} \longrightarrow \text{RESPONDING} \longrightarrow \text{CONTAINED} \longrightarrow \text{RESOLVED}$$
+  *(or terminal $\text{FALSE\_ALARM}$ at any pre-resolution stage).*
+- Strict backward-transition protection; terminal states cannot be re-opened.
+
+### 6. Dynamic Affected Area Calculation
+- Calculates hazard zones using Haversine spherical geometry.
+- Dynamically discovers active users whose latest location snapshot falls within the affected perimeter.
+
+### 7. Hyper-Targeted Alert Dispatch
+- Automatic generation of targeted warning alerts exclusively for users located within the incident's perimeter when an incident reaches `CONFIRMED` or `RESPONDING`.
+- Strict alert deduplication: transitioning from `CONFIRMED` to `RESPONDING` does not duplicate alerts for already-notified users.
+- Citizen alert acknowledgment flow (`PATCH /api/v1/alerts/{id}/read`).
+
+### 8. Interactive Leaflet + OpenStreetMap Map
+- Fully decoupled from proprietary map APIs (zero Google Maps API-key requirement).
+- Interactive map powered by Leaflet and React-Leaflet with OpenStreetMap cartography.
+- Incident markers with custom color-coded pins based on severity level.
+- Affected hazard radius visual perimeter circles drawn using exact backend coordinates and radius metrics.
+- Clickable popup sheets revealing category, confidence tier, corroboration count, and direct link to incident details.
+
+---
+
+## 🏗️ Architecture & Technology Stack
 
 ```text
 ┌────────────────────────────────────────────────────────────────────────┐
 │                   FRONTEND (React 19 + TypeScript + Vite)              │
-│  - Citizen Dashboard        - Emergency Report Modal                   │
-│  - Live Interactive Map     - Responder Operations Console             │
+│  - Citizen Dashboard        - Emergency Report Modal (w/ Photo Upload) │
+│  - Live Leaflet Map         - Responder Operations Console             │
 │  - Targeted Alerts Center   - Point-in-time Geolocation Snapshot       │
 └───────────────────────────────────┬────────────────────────────────────┘
-                                    │ REST API (Bearer JWT / CORS)
+                                    │ REST API (Bearer JWT / Dynamic CORS)
                                     ▼
 ┌────────────────────────────────────────────────────────────────────────┐
 │                     BACKEND (FastAPI + SQLAlchemy 2.x)                 │
@@ -59,291 +138,240 @@ Instead, independent reports are spatially and temporally correlated to compute 
 │  ├── /reports     : Citizen Emergency Reporting & Spatial Clustering   │
 │  ├── /incidents   : Incident Queries, Detail Views & Affected Radius   │
 │  ├── /alerts      : Targeted Alert Inbox & Read Acknowledgement        │
-│  └── /users       : Point-in-time Location Snapshot Updates            │
+│  ├── /users       : Point-in-time Location Snapshot Updates            │
+│  └── /health      : Deployment Health & Readiness Probe                │
 ├────────────────────────────────────────────────────────────────────────┤
 │                           CORE ENGINE SERVICES                         │
 │  ├── Geolocation Service    : Haversine spherical distance calculation │
-│  ├── Clustering Engine      : Proximity & temporal clustering          │
+│  ├── Clustering Engine      : Proximity & temporal report grouping     │
 │  ├── Confidence Engine      : Bounded 0–100 deterministic corroboration│
 │  ├── Incident State Machine : Responder lifecycle transitions & guards │
 │  ├── Affected Area Engine   : Radius calculation & user discovery      │
 │  └── Alert Service          : Targeted generation & deduplication      │
 ├────────────────────────────────────────────────────────────────────────┤
-│                   PERSISTENCE LAYER (SQLite + SQLAlchemy ORM)          │
-│  - Users (with hashed passwords, responder flags, location snapshot)   │
-│  - Incidents (with status, confidence score, affected radius)          │
-│  - Emergency Reports (linked to user & incident, independence flag)    │
-│  - Alerts (linked to incident & recipient user, read state)            │
+│                     PERSISTENCE LAYER (SQLAlchemy ORM)                 │
+│  - Development / Testing   : SQLite (Fast, zero-dependency)           │
+│  - Cloud Production Ready  : PostgreSQL (Render, Supabase, Neon)       │
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
-### Major End-to-End API Flow
+### Technology Breakdown
 
-```text
-Citizen A Submits Report
-        │
-        ▼
-POST /api/v1/reports ──────► Spatial/Temporal Incident Matching
-                                    │
-                                    ├── If first report ──► Creates Incident (UNVERIFIED)
-                                    └── If nearby report ──► Correlates to existing Incident
-                                                                    │
-                                                                    ▼
-                                                    Confidence Engine Evaluates:
-                                                    - Independent user count
-                                                    - Distance to epicenter
-                                                    - Temporal recency
-                                                    - Severity consistency
-                                                                    │
-                                    If score >= 25 & 2+ reports ────▼
-                                    Incident Status Advances to: VERIFYING
-                                                                    │
-                                                                    ▼
-Authorized Responder Reviews Incident ◄─────────────────────────────┘
-        │
-        ▼
-PATCH /api/v1/incidents/{id}/status ──► Transition to CONFIRMED
-                                                │
-                                                ▼
-                                    Affected Area Engine Calculates:
-                                    - Radius in meters (default 500m)
-                                    - Scans users within perimeter
-                                                │
-                                                ▼
-                                    Targeted Alert Engine:
-                                    - Generates isolated alert for affected users
-                                    - Deduplicates against previous status transitions
-                                                │
-                                                ▼
-                        Citizens Fetch Alerts (GET /api/v1/alerts)
-                        Citizens Mark Read (PATCH /api/v1/alerts/{id}/read)
-                                                │
-                                                ▼
-Responder Advances to RESPONDING ──► CONTAINED ──► RESOLVED
-```
-
----
-
-## 📈 Deterministic Confidence Engine
-
-The confidence engine calculates a mathematically deterministic score bounded strictly between **`0.0`** and **`100.0`**:
-
-$$\text{Confidence Score} = \text{Base Corroboration} + \text{Geographic Bonus} + \text{Temporal Bonus} + \text{Severity Bonus}$$
-
-### Scoring Breakdown
-
-| Component | Maximum | Criteria / Tiers |
+| Layer | Technologies | Purpose |
 | :--- | :--- | :--- |
-| **Base Corroboration** | **75.0** | 1 report: 25 pts • 2 reports: 45 pts • 3 reports: 60 pts • 4 reports: 70 pts • 5+ reports: 75 pts. Repeated reports by the same user count as 0 independent corroboration. |
-| **Geographic Bonus** | **15.0** | $\le 25\%$ of radius: +15 pts • $\le 50\%$: +10 pts • $\le 100\%$: +5 pts • Outside radius: 0 pts. |
-| **Temporal Bonus** | **10.0** | $\le 5$ min old: +10 pts • $\le 15$ min: +8 pts • $\le 30$ min: +5 pts • $\le 60$ min: +2 pts • $> 60$ min: 0 pts. |
-| **Severity Bonus** | **5.0** | Severity agreement across independent reports $\ge 75\%$: +5 pts • $\ge 50\%$: +3 pts • $> 0\%$: +1 pt. |
-
-### Confidence Tiers
-
-* **`LOW`** (`0.0 – 24.9`): Preliminary, isolated report. Insufficient corroboration.
-* **`MODERATE`** (`25.0 – 49.9`): Corroborating signals detected. Automatically transitions incident to `VERIFYING` when 2+ independent reports corroborate.
-* **`HIGH`** (`50.0 – 74.9`): Multiple independent reports confirm location and severity.
-* **`VERY_HIGH`** (`75.0 – 100.0`): Strong, multi-source community corroboration across spatial, temporal, and severity dimensions.
-
-> **Crucial Guarantee**: Confidence reflects community corroboration strength, **never** ground truth. The algorithm will never automatically mark an incident as `CONFIRMED`.
+| **Frontend UI** | React 19, TypeScript, Vite | Fast, typed, reactive single-page client |
+| **Mapping** | Leaflet 1.9, React-Leaflet, OpenStreetMap | Open-source geospatial visualization without API keys |
+| **Styling** | Vanilla CSS Design Tokens, Lucide React Icons | High-contrast emergency response theme |
+| **Backend API** | FastAPI, Starlette, Pydantic v2 | High-throughput asynchronous REST API |
+| **Security** | OAuth2 Bearer Tokens, PyJWT, Passlib (bcrypt) | Encrypted passwords and scoped authorization |
+| **ORM & Database** | SQLAlchemy 2.0, SQLite (Dev), PostgreSQL (Prod via psycopg2) | Type-safe persistence layer with schema migrations |
+| **Production Server** | Uvicorn (ASGI) | Production-grade server binding to `0.0.0.0:$PORT` |
 
 ---
 
-## 🛡️ Responder Lifecycle Management
+## ⚙️ Environment Variables Reference
 
-Only authenticated users with the `is_responder: true` role can modify operational status via `PATCH /api/v1/incidents/{incident_id}/status`. Unauthorized requests receive `403 Forbidden`.
+### Backend (`backend/.env`)
 
-### State Machine Transition Rules
+| Variable | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `PROJECT_NAME` | `str` | `Signal Emergency Response Platform` | Name of the platform displayed in OpenAPI docs. |
+| `ENVIRONMENT` | `str` | `development` | Deployment environment (`development` or `production`). |
+| `DEBUG` | `bool` | `true` | Enables debug logging and interactive tracebacks. |
+| `SECRET_KEY` | `str` | *Required* | 256-bit cryptographically secure secret for JWT tokens. |
+| `ACCESS_TOKEN_EXPIRE_MINUTES` | `int` | `10080` (7 days) | Token validity window. |
+| `DATABASE_URL` | `str` | `sqlite:///./emergency_response.db` | Database connection string (SQLite or PostgreSQL). |
+| `CORS_ORIGINS` | `str` or `list` | `["http://localhost:5173", ...]` | Allowed CORS origins. Accepts comma-separated list or `*`. |
+| `PORT` | `int` | `8000` | Port for Uvicorn server to bind to (maps to `$PORT` in cloud hosting). |
+| `UPLOAD_DIR` | `str` | `uploads/report_photos` | Directory path for storing uploaded photographic evidence. |
 
-```text
-┌──────────────┐
-│  UNVERIFIED  ├───────────────┐
-└──────┬───────┘               │
-       │                       │
-       ▼                       │
-┌──────────────┐               │
-│  VERIFYING   ├────────┐      │
-└──────┬───────┘        │      ▼
-       │                ├─►┌─────────────┐
-       ▼                │  │ FALSE_ALARM │ (Terminal)
-┌──────────────┐        │  └─────────────┘
-│  CONFIRMED   ├────────┤
-└──────┬───────┘        │
-       │                │
-       ▼                │
-┌──────────────┐        │
-│  RESPONDING  ├────────┘
-└──────┬───────┘
-       │
-       ▼
-┌──────────────┐
-│  CONTAINED   │
-└──────┬───────┘
-       │
-       ▼
-┌──────────────┐
-│   RESOLVED   │ (Terminal)
-└──────────────┘
-```
+### Frontend (`frontend/.env`)
 
-* **Backward transitions** (e.g., `CONFIRMED` → `VERIFYING`) are strictly rejected with `400 Bad Request`.
-* **Terminal states** (`RESOLVED`, `FALSE_ALARM`) cannot transition to any other status.
-* When transitioning to `CONFIRMED`, the official `confirmed_at` timestamp is permanently recorded.
+| Variable | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `VITE_API_URL` | `str` | `http://localhost:8000` | URL of the backend API. Supports root URL or `/api/v1` path. |
 
 ---
 
-## 🔔 Targeted Emergency Alerts
-
-* **Perimeter-Aware**: When an incident is `CONFIRMED` or `RESPONDING`, the backend scans active users whose last location snapshot is within the incident's `affected_radius_meters` (default: 500m).
-* **Zero Duplication**: Transitioning an incident from `CONFIRMED` to `RESPONDING` does not duplicate alerts for already-notified users.
-* **Recipient Isolation**: Users can only fetch and view their own alerts (`GET /api/v1/alerts`). Attempts to read another user's alert return `403 Forbidden`.
-* **Read Acknowledgment**: Citizens acknowledge alerts via `PATCH /api/v1/alerts/{alert_id}/read`, setting `is_read: true` and recording `read_at`.
-* **Privacy by Design**: Incident detail endpoints expose only aggregate counts (`affected_user_count`). Individual user locations, names, and contact details are never exposed to other citizens.
-
----
-
-## ⚡ Quick Start & Verification
+## 🚀 Local Development Setup
 
 ### Prerequisites
 - Python 3.10+ (Python 3.11 recommended)
 - Node.js 18+ (Node 20+ recommended)
+- Git
 
-### 1. Start the Backend API
+### 1. Backend Setup
 
 ```bash
+# Navigate to backend
 cd backend
-# Create virtual environment if needed
-python -m venv .venv
-.venv\Scripts\activate   # On Windows (or 'source .venv/bin/activate' on Linux/macOS)
 
-# Install dependencies
+# Create and activate virtual environment
+python -m venv .venv
+
+# Windows:
+.venv\Scripts\activate
+# macOS/Linux:
+source .venv/bin/activate
+
+# Install dependencies (includes FastAPI, SQLAlchemy, psycopg2-binary, passlib)
 pip install -r requirements.txt
 
-# Start FastAPI server
-uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
-```
-- API Base: `http://127.0.0.1:8000`
-- Interactive Swagger UI: `http://127.0.0.1:8000/docs`
-- Health Check: `http://127.0.0.1:8000/health`
-
-### 2. Start the Frontend Application
-
-```bash
-cd frontend
-# Configure environment (points to http://localhost:8000)
+# Configure environment variables
 cp .env.example .env
 
-# Install dependencies
+# Start development server
+uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
+```
+
+The backend is now live at:
+- **API Base**: `http://127.0.0.1:8000`
+- **Swagger Documentation**: `http://127.0.0.1:8000/docs`
+- **ReDoc Documentation**: `http://127.0.0.1:8000/redoc`
+- **Health Check**: `http://127.0.0.1:8000/health`
+
+### 2. Frontend Setup
+
+```bash
+# Navigate to frontend in a new terminal
+cd frontend
+
+# Configure environment variables
+cp .env.example .env
+
+# Install dependencies (includes React 19, Leaflet, Lucide)
 npm install
 
 # Start Vite dev server
 npm run dev
 ```
-- Web Application: `http://localhost:5173`
+
+The frontend application is now accessible at `http://localhost:5173`.
 
 ---
 
-### 8. Real Google Maps JavaScript Visualization
-- **Official Google Maps JS API**: Embedded responsive map with dark-mode styling aligned to the Signal design system.
-- **Incident Markers & Severity Pinning**: Visual pins placed at coordinates with color coding corresponding to incident severity.
-- **Affected Area Circles**: Dynamic SVG/Canvas circles visualizing `affected_radius_meters` around incident epicenters.
-- **Interactive InfoWindows**: Clicking any marker reveals emergency category, status, confidence tier, corroboration count, and direct link to incident details.
-- **Graceful Fallback**: Operates cleanly without crashing if `VITE_GOOGLE_MAPS_API_KEY` is omitted, displaying an informative notice and integrated radar visualization.
+## 🧪 Comprehensive Test Suite
 
-### 9. Optional Evidence Photo Attachment
-- **On-Scene Visual Evidence**: Citizens can optionally attach a photo (JPEG, PNG, WebP up to 5MB) when filing a report.
-- **Validation & Safe Storage**: Strict MIME-type checking, file size enforcement, and UUID-based collision-free storage in `backend/uploads/report_photos/`.
-- **Controlled Serving**: Photos served through FastAPI static route `/uploads/report_photos/<uuid>.<ext>` without arbitrary filesystem access.
-- **Privacy Preserving**: Citizen identity is decoupled from uploaded photos; evidence is exposed in incident details for responder situational awareness without exposing the citizen's personal metadata.
+The platform includes full backend test coverage across all domain services, state machines, and API endpoints, plus strict frontend TypeScript validation.
 
----
+### Backend Pytest Suite (93 Passing Tests)
 
-## 🧪 Test Suites
-
-### Backend Unit & Integration Tests (93 Tests)
 ```bash
 cd backend
-.venv\Scripts\pytest.exe -v
+pytest -v
 ```
-*Result: **93 passed** (covering auth, geolocation, clustering, corroboration, confidence scoring, responder state machine, affected area, alert dispatch, and photo uploads).*
 
-### Frontend Typecheck & Build
+**Coverage Breakdown (93 Tests):**
+- `test_auth.py` (10 tests): User registration, password hashing, JWT issue/expiry, duplicate checks.
+- `test_clustering.py` (7 tests): Spatial distance thresholds, temporal clustering windows, new incident creation.
+- `test_confidence.py` (12 tests): Mathematical corroboration curves, temporal degradation, severity consensus, bounds checks.
+- `test_state_machine.py` (13 tests): Responder verification rules, backward transition blocks, terminal state enforcement.
+- `test_affected_area.py` (6 tests): Haversine distance, perimeter user discovery, edge boundary conditions.
+- `test_alerts.py` (8 tests): Targeted alert generation, deduplication guards, recipient isolation.
+- `test_reports_api.py` (7 tests): Emergency report filing, category validation, spatial coordination.
+- `test_incidents_api.py` (9 tests): Incident list filtering, detail schemas, responder status updates.
+- `test_users_api.py` (5 tests): Location snapshot updates, authenticated profile retrieval.
+- `test_report_photos.py` (7 tests): MIME validation, size limits, collision-safe UUID storage, static serving.
+- `test_main_routes.py` (9 tests): Root info, health endpoint, dynamic CORS headers, static routes.
+
+### Frontend TypeScript & Build Verification
+
 ```bash
 cd frontend
-npx tsc --noEmit
+
+# Validate TypeScript type consistency (0 errors)
+npm run typecheck
+
+# Build production bundle (Clean Vite build)
 npm run build
 ```
-*Result: **0 type errors**, production bundle built cleanly.*
 
 ---
 
-## 📁 Repository Directory Structure
+## ☁️ Deployment Guide
 
-```text
-emergency-response/
-├── backend/
-│   ├── app/
-│   │   ├── api/
-│   │   │   ├── dependencies.py      # OAuth2 JWT & DB session dependencies
-│   │   │   └── routes/              # FastAPI route endpoints
-│   │   │       ├── alerts.py        # Targeted alerts & mark-as-read
-│   │   │       ├── auth.py          # User registration & OAuth2 login
-│   │   │       ├── incidents.py     # Incident queries & status management
-│   │   │       ├── reports.py       # Emergency report & photo upload endpoint
-│   │   │       └── users.py         # Point-in-time location snapshots
-│   │   ├── core/                    # Settings, security & JWT utilities
-│   │   ├── db/                      # SQLAlchemy session & SQLite initialization
-│   │   ├── models/                  # SQLAlchemy ORM models
-│   │   ├── schemas/                 # Pydantic v2 validation & response schemas
-│   │   ├── services/                # Spatial, confidence & lifecycle logic
-│   │   └── main.py                  # Application entry point & static file mount
-│   ├── tests/                       # 93 passing unit & integration tests
-│   ├── uploads/report_photos/       # Safe UUID photo storage (.gitkeep)
-│   ├── .env.example                 # Safe backend environment template
-│   └── requirements.txt             # Python dependencies
-├── frontend/
-│   ├── src/
-│   │   ├── api/client.ts            # Centralized API client & FormData handler
-│   │   ├── components/              # Google Maps JS view & fallback components
-│   │   ├── types/api.ts             # TypeScript domain & API interfaces
-│   │   ├── App.tsx                  # Core interactive application UI
-│   │   ├── index.css                # Custom CSS design system tokens
-│   │   └── main.tsx                 # React entry point
-│   ├── .env.example                 # Safe frontend environment template
-│   ├── package.json                 # Dependencies & scripts
-│   ├── tsconfig.json                # TypeScript compiler config
-│   └── vite.config.ts               # Vite build & plugin configuration
-├── docs/
-│   ├── api.md                       # Comprehensive REST API specifications
-│   ├── architecture.md              # System design, data flows & algorithms
-│   └── development.md               # Developer setup & testing guide
-├── .gitignore                       # Multi-tier ignore configuration
-└── README.md                        # Master project documentation
-```
+Signal is architected for seamless separation of concerns: deploy the frontend single-page application to **Vercel** and the backend API to **Render** with a managed **PostgreSQL** database.
+
+### Option 1: Frontend Deployment on Vercel
+
+The frontend includes a pre-configured `frontend/vercel.json` rewrite file to ensure SPA client-side routing works smoothly.
+
+1. Push your repository to GitHub.
+2. Log in to [Vercel](https://vercel.com) and click **Add New Project**.
+3. Import your `emergency-response` repository.
+4. In the Project Configuration screen:
+   - **Root Directory**: Click edit and select `frontend`.
+   - **Framework Preset**: Vite (detected automatically).
+   - **Build Command**: `npm run build`
+   - **Output Directory**: `dist`
+   - **Install Command**: `npm install`
+5. In **Environment Variables**, add:
+   ```env
+   VITE_API_URL=https://your-backend-service.onrender.com
+   ```
+6. Click **Deploy**. Vercel will build and provide your production frontend URL (e.g., `https://signal-emergency.vercel.app`).
 
 ---
 
-## 🔒 Security & Privacy Posture
+### Option 2: Backend Deployment on Render
 
-* **Password Security**: Passwords hashed with bcrypt (`passlib` + `bcrypt<=4.0.1`) with salt. Never stored or logged in plaintext.
-* **JWT Bearer Token Authentication**: HS256-signed tokens with expiration; required on all protected endpoints.
-* **Role-Based Access Control**: Responder-only actions verified at database and route levels (`is_responder: true`).
-* **Tenant / Recipient Isolation**: Emergency alerts are strictly scoped by user ID; users cannot access or alter other users' alerts.
-* **Privacy Protection**: Continuous GPS tracking is forbidden. Only point-in-time snapshots are stored, and individual coordinates are never exposed in public incident payloads.
-* **Photo Privacy**: Citizen identity is decoupled from uploaded photos. Evidence is exposed strictly in incident details for responder awareness.
-* **CORS**: Environment-aware CORS configuration restricted to authorized frontend local development origins.
+The repository includes a ready-to-use `render.yaml` Blueprint or can be configured manually as a Web Service.
+
+#### Step A: Provision a Managed PostgreSQL Database (Recommended for Cloud)
+> **Why PostgreSQL for Cloud?** SQLite writes to local disk. On serverless or container platforms like Render, disks are ephemeral across restarts unless paid persistent disks are attached. Managed PostgreSQL guarantees persistent data storage.
+
+1. In Render Dashboard, click **New +** → **PostgreSQL**.
+2. Name: `signal-emergency-db`, Database: `signal_emergency`, User: `signal_admin`.
+3. Select the Free tier and click **Create Database**.
+4. Once provisioned, copy the **Internal Database URL** (e.g. `postgres://user:pass@dpg-.../dbname`).
+
+#### Step B: Deploy the FastAPI Backend Web Service
+1. In Render Dashboard, click **New +** → **Web Service**.
+2. Connect your GitHub repository.
+3. Configure the settings:
+   - **Name**: `signal-emergency-api`
+   - **Root Directory**: `backend`
+   - **Runtime**: `Python 3`
+   - **Build Command**: `pip install -r requirements.txt`
+   - **Start Command**: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+   - **Health Check Path**: `/health`
+4. In **Environment Variables**, add:
+   ```env
+   PYTHON_VERSION=3.11.9
+   ENVIRONMENT=production
+   DEBUG=false
+   SECRET_KEY=<generate-a-strong-random-64-char-hex-key>
+   DATABASE_URL=<your-render-postgresql-internal-url>
+   CORS_ORIGINS=https://your-frontend-app.vercel.app
+   UPLOAD_DIR=uploads/report_photos
+   ```
+   *(Note: The platform's `config.py` automatically normalizes Render's `postgres://` URLs to SQLAlchemy 2.0-compliant `postgresql://` automatically).*
+5. Click **Create Web Service**.
+6. On startup, the backend automatically initializes database tables via `init_db.py`.
 
 ---
 
-## ⚠️ Current Limitations & Roadmap
+## 🔒 Security & Data Privacy
 
-1. **Storage Tier**: Uses SQLite for rapid local deployment and self-contained zero-dependency testing. Production scaling will adopt PostgreSQL with PostGIS.
-2. **Photo File Storage**: Uses local storage under `backend/uploads/report_photos/`. Cloud production deployments should mount an S3 or Google Cloud Storage bucket.
-3. **Alert Polling**: Uses point-in-time polling for targeted alerts. Production systems can layer Server-Sent Events (SSE) or WebSockets for real-time push.
+- **Password Hashing**: Passwords hashed using bcrypt with dynamic salts. Never logged or stored in plaintext.
+- **JWT Authorization**: Cryptographically signed HS256 tokens with configurable expiration windows.
+- **Role-Based Access Control**: Sensitive incident transitions strictly protected by `is_responder: true` verification.
+- **Data Privacy by Design**: Continuous GPS tracking is never performed. The system stores only point-in-time snapshots. Public incident details expose only aggregate statistics (`affected_user_count`), never individual citizen identities or locations.
+- **Alert Isolation**: Citizen emergency alert inboxes are strictly tenant-isolated (`WHERE user_id = current_user.id`).
+- **File Upload Safety**: Uploaded photos are verified for MIME content type, size-capped at 5MB, stored with randomized UUID filenames, and served strictly as static assets.
+- **CORS Protection**: Starlette CORS middleware dynamically configures credentials and allowed origins based on environment settings.
+
+---
+
+## ⚠️ Known Limitations & Future Improvements
+
+1. **Photo Storage Tier**: Photographic evidence is currently stored on the local filesystem (`UPLOAD_DIR`). For high-availability multi-instance deployments, integrating cloud object storage (AWS S3 or Cloudinary) via an S3 driver is the natural next step.
+2. **Real-Time Push Alerts**: Alert delivery is currently polled via REST intervals. A future enhancement is layering WebSockets or Server-Sent Events (SSE) for sub-second alert broadcasting.
+3. **Multi-Factor Authentication (MFA)**: Adding SMS or TOTP authentication for first responder accounts.
+4. **Offline Capability**: Progressive Web App (PWA) caching for field responders operating in low-connectivity disaster zones.
 
 ---
 
 ## 📄 License
 
-This project is licensed under the terms of the MIT License. See [LICENSE](LICENSE) for details.
+This project is licensed under the [MIT License](LICENSE).

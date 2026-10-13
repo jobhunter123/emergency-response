@@ -6,14 +6,17 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from app.core.config import settings
 
+db_url = settings.SQLALCHEMY_DATABASE_URI
+
 # Configure SQLite-specific connection arguments if using SQLite
 connect_args = {}
-if settings.DATABASE_URL.startswith("sqlite"):
+if db_url.startswith("sqlite"):
     connect_args["check_same_thread"] = False
 
 engine = create_engine(
-    settings.DATABASE_URL,
+    db_url,
     connect_args=connect_args,
+    pool_pre_ping=True,
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

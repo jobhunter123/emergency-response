@@ -16,10 +16,15 @@ import {
   UserLocationResponse,
 } from "../types/api";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_URL?.replace(/\/$/, "") || "http://localhost:8000";
+const rawApiUrl = (
+  import.meta.env.VITE_API_URL?.trim() || "http://localhost:8000"
+).replace(/\/$/, "");
 
-const API_V1_PREFIX = `${API_BASE_URL}/api/v1`;
+export const API_BASE_URL = rawApiUrl.endsWith("/api/v1")
+  ? rawApiUrl.slice(0, -"/api/v1".length)
+  : rawApiUrl;
+
+export const API_V1_PREFIX = `${API_BASE_URL}/api/v1`;
 
 const TOKEN_STORAGE_KEY = "signal_auth_token";
 

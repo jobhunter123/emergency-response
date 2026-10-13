@@ -142,13 +142,13 @@ UNVERIFIED ──► VERIFYING ──► CONFIRMED ──► RESPONDING ──�
 4. Queries existing `Alert` records for `(incident_id, user_id)` to enforce zero duplication.
 5. Emits new `Alert` records for newly affected users.
 
-### 4.6 Google Maps Visualization Layer
-* **Official Google Maps JavaScript Integration**: Utilizes `@googlemaps/js-api-loader` to dynamically bootstrap Google Maps in React without brittle inline script injection.
-* **Theming & Map Styling**: Custom dark palette matches the Signal emergency dashboard aesthetics.
-* **Markers & InfoWindows**: Renders custom SVG pins color-coded by incident severity. Markers reveal structured InfoWindows providing emergency category, confidence tier, corroborations, and navigation actions.
-* **Affected Area Rings**: Renders `google.maps.Circle` geometries representing the `affected_radius_meters` around each active incident.
-* **Point-in-Time Location Pin**: Displays user snapshot position without initiating background GPS polling.
-* **Non-Crashing Fallback**: If `VITE_GOOGLE_MAPS_API_KEY` is omitted or network initialization fails, the component renders an informative banner with an integrated radar canvas view.
+### 4.6 Leaflet + OpenStreetMap Visualization Layer
+* **Leaflet & React-Leaflet Integration**: Uses open-source Leaflet with OpenStreetMap tiles, removing proprietary Google Maps API key requirements.
+* **Theming & Map Styling**: Light-theme styling matches the Signal emergency dashboard aesthetics and layout tokens.
+* **Markers & Popups**: Renders custom SVG pins color-coded by incident severity with pulsing beacon indicators for critical/confirmed incidents. Markers reveal structured popup cards providing emergency category, severity badge, confidence tier, corroborations, and navigation actions.
+* **Affected Area Rings**: Renders React-Leaflet `Circle` geometries representing the `affected_radius_meters` around each active incident.
+* **Point-in-Time Location Pin**: Displays user snapshot position without initiating invasive background GPS polling.
+* **Resilient State Handling**: Gracefully handles loading overlays, empty sector states, and invalid/missing coordinates without throwing exceptions or breaking layout.
 
 ### 4.7 Report Evidence Photo Storage Flow
 ```text
