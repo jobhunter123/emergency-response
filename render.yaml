@@ -2,6 +2,7 @@ services:
   - type: web
     name: signal-emergency-api
     runtime: python
+    plan: free
     rootDir: backend
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
@@ -16,18 +17,18 @@ services:
         value: "false"
       - key: SECRET_KEY
         generateValue: true
+      # Explicit production frontend origin (no wildcard).
+      # Replace with your actual Vercel deployment URL in the Render dashboard.
       - key: CORS_ORIGINS
-        value: "*"
-      # To attach a persistent PostgreSQL database, uncomment the database below
-      # and replace DATABASE_URL with:
+        value: "https://your-signal-app.vercel.app"
+      # DATABASE_URL is optional.
+      # 1. Recommended (Free & Permanent, No Credit Card):
+      #    Create a free serverless database at https://neon.tech, then set DATABASE_URL
+      #    in the Render Web Service Environment settings (or uncomment sync: false below).
+      # 2. Local Fallback (Free, Ephemeral):
+      #    If DATABASE_URL is omitted, the API defaults to SQLite. Note that Render's
+      #    temporary filesystem is ephemeral and not durable storage; data resets on restart.
+      # 3. Render Managed Database Note:
+      #    Render's native managed PostgreSQL plan expires after 30 days and often requires billing details.
       # - key: DATABASE_URL
-      #   fromDatabase:
-      #     name: signal-emergency-db
-      #     property: connectionString
-
-# Optional persistent managed PostgreSQL database on Render:
-# databases:
-#   - name: signal-emergency-db
-#     databaseName: signal_emergency
-#     user: signal_admin
-#     plan: free
+      #   sync: false

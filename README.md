@@ -317,21 +317,31 @@ The frontend includes a pre-configured `frontend/vercel.json` rewrite file to en
 
 The repository includes a ready-to-use `render.yaml` Blueprint or can be configured manually as a Web Service.
 
-#### Step A: Provision a Managed PostgreSQL Database (Recommended for Cloud)
-> **Why PostgreSQL for Cloud?** SQLite writes to local disk. On serverless or container platforms like Render, disks are ephemeral across restarts unless paid persistent disks are attached. Managed PostgreSQL guarantees persistent data storage.
+#### Step A: Database Options for Cloud Deployment
 
-1. In Render Dashboard, click **New +** → **PostgreSQL**.
-2. Name: `signal-emergency-db`, Database: `signal_emergency`, User: `signal_admin`.
-3. Select the Free tier and click **Create Database**.
-4. Once provisioned, copy the **Internal Database URL** (e.g. `postgres://user:pass@dpg-.../dbname`).
+Choose the database strategy that best suits your deployment:
+
+1. **Neon Serverless PostgreSQL (Recommended — 100% Free, No Credit Card, Permanent)**:
+   - Sign up at [neon.tech](https://neon.tech) (free tier with no credit card required).
+   - Create a project (e.g., `signal-emergency`) and copy the connection string (`postgresql://user:pass@ep-...neon.tech/neondb?sslmode=require`).
+   - Neon databases do **not** expire after 30 days, making them ideal for long-lived portfolio demonstrations.
+
+2. **Render Native Managed PostgreSQL (30-Day Expiration)**:
+   - Render offers a free PostgreSQL tier in their dashboard (**New +** → **PostgreSQL**).
+   - *Note*: Render's free databases automatically expire and are deleted after **30 days**, and Render often requires billing details on file to provision native databases.
+
+3. **Local SQLite Container Fallback (Zero Setup)**:
+   - If `DATABASE_URL` is omitted, the API automatically uses SQLite on the container.
+   - *Important Warning*: Render's temporary filesystem is **not durable storage**. Any local SQLite database file will be permanently wiped whenever the free instance sleeps due to inactivity, restarts, or redeploys. For durable portfolio demo data, use Neon PostgreSQL as described in Option 1.
 
 #### Step B: Deploy the FastAPI Backend Web Service
-1. In Render Dashboard, click **New +** → **Web Service**.
+1. In Render Dashboard, click **New +** → **Web Service** (or deploy using the repository's `render.yaml` Blueprint).
 2. Connect your GitHub repository.
 3. Configure the settings:
    - **Name**: `signal-emergency-api`
    - **Root Directory**: `backend`
    - **Runtime**: `Python 3`
+   - **Instance Type / Plan**: `Free` ($0/mo)
    - **Build Command**: `pip install -r requirements.txt`
    - **Start Command**: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
    - **Health Check Path**: `/health`
@@ -341,11 +351,11 @@ The repository includes a ready-to-use `render.yaml` Blueprint or can be configu
    ENVIRONMENT=production
    DEBUG=false
    SECRET_KEY=<generate-a-strong-random-64-char-hex-key>
-   DATABASE_URL=<your-render-postgresql-internal-url>
+   DATABASE_URL=<your-neon-postgresql-connection-string>
    CORS_ORIGINS=https://your-frontend-app.vercel.app
    UPLOAD_DIR=uploads/report_photos
    ```
-   *(Note: The platform's `config.py` automatically normalizes Render's `postgres://` URLs to SQLAlchemy 2.0-compliant `postgresql://` automatically).*
+   *(Note: The platform's `config.py` automatically normalizes `postgres://` URLs to SQLAlchemy 2.0-compliant `postgresql://` automatically, and safely falls back to SQLite if `DATABASE_URL` is omitted).*
 5. Click **Create Web Service**.
 6. On startup, the backend automatically initializes database tables via `init_db.py`.
 

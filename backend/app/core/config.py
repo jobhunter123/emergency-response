@@ -70,7 +70,9 @@ class Settings(BaseSettings):
     @property
     def SQLALCHEMY_DATABASE_URI(self) -> str:
         """Normalize database connection URL (e.g. Render postgres:// to postgresql://)."""
-        url = self.DATABASE_URL
+        url = (self.DATABASE_URL or "").strip()
+        if not url:
+            url = "sqlite:///./emergency_response.db"
         if url.startswith("postgres://"):
             url = url.replace("postgres://", "postgresql://", 1)
         return url
